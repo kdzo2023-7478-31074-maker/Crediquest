@@ -3,17 +3,35 @@ package com.example.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Paper & Ink Editorial Theme Tokens
-val PaperLight = Color(0xFFF8F5EE)
-val PaperSurface = Color(0xFFEFEBE1)
-val PaperSurfaceVariant = Color(0xFFE5DFCFC)
-val InkPrimary = Color(0xFF1A1918)
-val InkSecondary = Color(0xFF6B665E)
-val LineBorder = Color(0xFFCBC4B6)
+val PaperLight = Color(0xFFF6F1E7)
+val PaperSurface = Color(0xFFEDE6D6)
+val PaperSurfaceVariant = Color(0xFFE4DCCB)
+val InkPrimary = Color(0xFF141414)
+val InkSecondary = Color(0xFF5C5852)
+val LineBorder = Color(0xFF1E1D1B)
 val HighlightGold = Color(0xFFC59B27)
 val HighlightSoft = Color(0xFFEDE7DA)
 val GoldLeaf = Color(0xFFD4AF37)
 val GoldFoilSoft = Color(0xFFE6C875)
-val PressCrimson = Color(0xFF8E283A)
+val PressCrimson = Color(0xFFD63626)
+
+// Swiss-Editorial Bento & Soft 3D Tokens
+val EditorialCream = Color(0xFFF7F2E8)
+val EditorialCreamExtrude = Color(0xFFC9C0AE)
+val EditorialCrimson = Color(0xFFD63626)
+val EditorialCrimsonDark = Color(0xFF991F14)
+val EditorialInk = Color(0xFF141414)
+val EditorialInkExtrude = Color(0xFF050505)
+val EditorialSand = Color(0xFFE8E0CF)
+val EditorialSandExtrude = Color(0xFFBDB39E)
+
+// Liquid Glass Tokens
+val GlassLightTop = Color(0xDEFFFFFF)
+val GlassLightBottom = Color(0xA6F7F2E8)
+val GlassRimLight = Color(0xEBFFFFFF)
+val GlassDarkTop = Color(0xD926262B)
+val GlassDarkBottom = Color(0xA616161A)
+val GlassRimDark = Color(0x66FFFFFF)
 
 // Sepia Tones
 val SepiaPaper = Color(0xFFF1E6CF)

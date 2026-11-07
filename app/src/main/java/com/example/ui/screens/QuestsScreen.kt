@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,13 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Construction
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.HourglassEmpty
-import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,18 +33,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.QuestChallenge
+import com.example.ui.components.EditorialSectionHeader
+import com.example.ui.components.LiquidGlassBox
+import com.example.ui.components.Soft3DCard
 import com.example.ui.theme.ClothAmber
 import com.example.ui.theme.ClothForest
 import com.example.ui.theme.ClothNavy
 import com.example.ui.theme.ClothRust
+import com.example.ui.theme.EditorialCream
+import com.example.ui.theme.EditorialCrimson
+import com.example.ui.theme.EditorialCrimsonDark
+import com.example.ui.theme.EditorialInk
+import com.example.ui.theme.EditorialInkExtrude
+import com.example.ui.theme.GoldFoilSoft
+import com.example.ui.theme.GoldLeaf
 
 private data class FutureModulePlaceholder(
     val title: String,
@@ -107,14 +115,22 @@ fun QuestsScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(18.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Spacer(modifier = Modifier.height(6.dp))
             Column {
                 Text(
-                    text = "Journalism Quests",
-                    style = MaterialTheme.typography.headlineLarge,
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(color = EditorialCrimson, fontWeight = FontWeight.Black)) {
+                            append(".")
+                        }
+                        append("JOURNALISM QUESTS")
+                    },
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 0.6.sp
+                    ),
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
@@ -125,73 +141,72 @@ fun QuestsScreen(
             }
         }
 
-        // Mastery & Score Banner
+        // Mastery & Score Soft 3D Bento Banner
         item {
-            Card(
+            Soft3DCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(4.dp, RoundedCornerShape(12.dp))
                     .testTag("quests_score_banner"),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.7f))
+                containerColor = EditorialInk,
+                extrudeColor = EditorialInkExtrude,
+                borderColor = EditorialInk,
+                shape = RoundedCornerShape(16.dp),
+                extrudeDepth = 4.dp
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(com.example.ui.theme.GoldLeaf.copy(alpha = 0.18f))
-                                    .border(1.dp, com.example.ui.theme.GoldLeaf.copy(alpha = 0.5f), RoundedCornerShape(10.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.EmojiEvents,
-                                    contentDescription = null,
-                                    tint = com.example.ui.theme.GoldLeaf,
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(14.dp))
-                            Column {
-                                Text(
-                                    text = "$totalXp XP EARNED",
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontFamily = FontFamily.Serif,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 17.sp,
-                                        letterSpacing = 0.5.sp
-                                    ),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = "$completedQuestsCount of ${quests.size} challenges solved",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Surface(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        LiquidGlassBox(
                             shape = RoundedCornerShape(12.dp),
-                            color = if (totalXp >= 150) com.example.ui.theme.GoldLeaf else MaterialTheme.colorScheme.primary
+                            tintColor = EditorialCrimson,
+                            contentPadding = PaddingValues(10.dp)
                         ) {
-                            Text(
-                                text = if (totalXp >= 150) "Senior Editor" else "Junior Reporter",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = if (totalXp >= 150) Color.Black else MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            Icon(
+                                imageVector = Icons.Filled.EmojiEvents,
+                                contentDescription = null,
+                                tint = GoldFoilSoft,
+                                modifier = Modifier.size(26.dp)
                             )
                         }
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Column {
+                            Text(
+                                text = "$totalXp XP EARNED",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 18.sp,
+                                    letterSpacing = 0.6.sp
+                                ),
+                                color = EditorialCream
+                            )
+                            Text(
+                                text = "$completedQuestsCount of ${quests.size} challenges solved",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = EditorialCream.copy(alpha = 0.78f)
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (totalXp >= 150) GoldLeaf else EditorialCrimson,
+                        border = BorderStroke(1.dp, EditorialCream.copy(alpha = 0.4f))
+                    ) {
+                        Text(
+                            text = if (totalXp >= 150) "SENIOR EDITOR" else "JUNIOR REPORTER",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = if (totalXp >= 150) EditorialInk else Color.White,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        )
                     }
                 }
             }
@@ -199,21 +214,19 @@ fun QuestsScreen(
 
         // Active Quick Check Challenges
         item {
-            Text(
-                text = "Active Quick Check Quests",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
+            EditorialSectionHeader(
+                title = "Active Quick Check Quests",
+                indexLabel = "01"
             )
         }
 
         items(quests) { quest ->
-            Card(
+            Soft3DCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("quest_card_${quest.id}"),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                shape = RoundedCornerShape(14.dp),
+                extrudeDepth = 4.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -222,23 +235,36 @@ fun QuestsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            shape = RoundedCornerShape(6.dp),
+                            border = BorderStroke(1.25.dp, EditorialInk),
                             color = MaterialTheme.colorScheme.surfaceVariant
                         ) {
                             Text(
-                                text = quest.category,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                text = quest.category.uppercase(),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 9.5.sp,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                             )
                         }
 
-                        Text(
-                            text = "+${quest.xpReward} XP",
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = EditorialCrimson
+                        ) {
+                            Text(
+                                text = "+${quest.xpReward} XP",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 10.sp
+                                ),
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -247,7 +273,8 @@ fun QuestsScreen(
                         text = quest.prompt,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontFamily = FontFamily.Serif,
-                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.5.sp,
                             lineHeight = 22.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface
@@ -261,21 +288,21 @@ fun QuestsScreen(
                         val isCorrectOption = quest.correctIndex == index
 
                         val backgroundColor = when {
-                            quest.isAnswered && isCorrectOption -> MaterialTheme.colorScheme.primary
+                            quest.isAnswered && isCorrectOption -> EditorialCrimson
                             quest.isAnswered && isSelected && !isCorrectOption -> MaterialTheme.colorScheme.errorContainer
-                            else -> MaterialTheme.colorScheme.surface
+                            else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
                         }
 
                         val textColor = when {
-                            quest.isAnswered && isCorrectOption -> MaterialTheme.colorScheme.onPrimary
+                            quest.isAnswered && isCorrectOption -> Color.White
                             quest.isAnswered && isSelected && !isCorrectOption -> MaterialTheme.colorScheme.onErrorContainer
                             else -> MaterialTheme.colorScheme.onSurface
                         }
 
                         val borderColor = when {
-                            quest.isAnswered && isCorrectOption -> MaterialTheme.colorScheme.primary
+                            quest.isAnswered && isCorrectOption -> EditorialInk
                             quest.isAnswered && isSelected && !isCorrectOption -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.outline
+                            else -> EditorialInk.copy(alpha = 0.35f)
                         }
 
                         Surface(
@@ -285,9 +312,9 @@ fun QuestsScreen(
                                 .clickable(enabled = !quest.isAnswered) {
                                     onAnswerQuest(quest.id, index)
                                 },
-                            shape = RoundedCornerShape(6.dp),
+                            shape = RoundedCornerShape(8.dp),
                             color = backgroundColor,
-                            border = BorderStroke(1.dp, borderColor)
+                            border = BorderStroke(1.25.dp, borderColor)
                         ) {
                             Row(
                                 modifier = Modifier.padding(12.dp),
@@ -295,7 +322,7 @@ fun QuestsScreen(
                             ) {
                                 Text(
                                     text = "${('A' + index)}. ",
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Black),
                                     color = textColor
                                 )
                                 Text(
@@ -308,7 +335,7 @@ fun QuestsScreen(
                                     Icon(
                                         imageVector = Icons.Filled.CheckCircle,
                                         contentDescription = "Correct",
-                                        tint = MaterialTheme.colorScheme.onPrimary,
+                                        tint = Color.White,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 } else if (quest.isAnswered && isSelected && !isCorrectOption) {
@@ -323,27 +350,31 @@ fun QuestsScreen(
                         }
                     }
 
-                    // Explanation Feedback
+                    // Liquid Glass Explanation Feedback
                     AnimatedVisibility(visible = quest.isAnswered) {
-                        Column(
+                        LiquidGlassBox(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(12.dp)
+                                .padding(top = 10.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(12.dp)
                         ) {
-                            Text(
-                                text = if (quest.isCorrect) "✓ Correct Answer" else "⚠ Review Note",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = if (quest.isCorrect) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = quest.explanation,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Column {
+                                Text(
+                                    text = if (quest.isCorrect) "✓ CORRECT ANSWER" else "⚠ REVIEW NOTE",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Black,
+                                        letterSpacing = 0.6.sp
+                                    ),
+                                    color = if (quest.isCorrect) EditorialCrimson else MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(3.dp))
+                                Text(
+                                    text = quest.explanation,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -352,39 +383,26 @@ fun QuestsScreen(
 
         // Future Modules Placeholders
         item {
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Construction,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = "Upcoming Modules & Integration Placeholders",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "Prepared placeholders for subsequent syllabus module integration",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
+            EditorialSectionHeader(
+                title = "Upcoming Modules",
+                indexLabel = "02"
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Prepared placeholders for subsequent syllabus module integration",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         items(upcomingModules) { futureMod ->
-            Card(
+            Soft3DCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("placeholder_module_${futureMod.plannedModuleNumber}"),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f))
+                shape = RoundedCornerShape(14.dp),
+                extrudeDepth = 3.5.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -393,12 +411,12 @@ fun QuestsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(6.dp),
                             color = futureMod.color.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, futureMod.color.copy(alpha = 0.35f))
+                            border = BorderStroke(1.dp, futureMod.color.copy(alpha = 0.45f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -410,24 +428,37 @@ fun QuestsScreen(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = futureMod.targetTerm,
-                                    style = MaterialTheme.typography.labelSmall,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                     color = futureMod.color
                                 )
                             }
                         }
 
-                        Text(
-                            text = "Module ${futureMod.plannedModuleNumber}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = EditorialInk
+                        ) {
+                            Text(
+                                text = "MODULE ${futureMod.plannedModuleNumber}",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 9.5.sp,
+                                    fontWeight = FontWeight.Black
+                                ),
+                                color = EditorialCream,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = futureMod.title,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontFamily = FontFamily.Serif,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
@@ -441,15 +472,15 @@ fun QuestsScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Syllabus tags
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         futureMod.syllabusTopics.forEach { topic ->
                             Surface(
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant
+                                shape = RoundedCornerShape(5.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                border = BorderStroke(0.75.dp, EditorialInk.copy(alpha = 0.25f))
                             ) {
                                 Text(
                                     text = topic,

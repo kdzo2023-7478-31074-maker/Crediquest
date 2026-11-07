@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val CrediQuestDarkColorScheme = darkColorScheme(
-    primary = DarkAccent,
-    onPrimary = PaperDark,
+    primary = EditorialCrimson,
+    onPrimary = Color.White,
     primaryContainer = DarkSurfaceVariant,
     onPrimaryContainer = DarkInk,
     secondary = DarkAccent,
@@ -29,20 +29,20 @@ private val CrediQuestDarkColorScheme = darkColorScheme(
 )
 
 private val CrediQuestLightColorScheme = lightColorScheme(
-    primary = InkPrimary,
-    onPrimary = PaperLight,
-    primaryContainer = PaperSurfaceVariant,
-    onPrimaryContainer = InkPrimary,
-    secondary = ClothNavy,
-    onSecondary = Color.White,
-    background = PaperLight,
-    onBackground = InkPrimary,
-    surface = PaperSurface,
-    onSurface = InkPrimary,
-    surfaceVariant = PaperSurfaceVariant,
+    primary = EditorialCrimson,
+    onPrimary = Color.White,
+    primaryContainer = EditorialSand,
+    onPrimaryContainer = EditorialInk,
+    secondary = EditorialInk,
+    onSecondary = EditorialCream,
+    background = EditorialCream,
+    onBackground = EditorialInk,
+    surface = Color(0xFFFAF6EE),
+    onSurface = EditorialInk,
+    surfaceVariant = EditorialSand,
     onSurfaceVariant = InkSecondary,
-    outline = LineBorder,
-    outlineVariant = LineBorder
+    outline = EditorialInk,
+    outlineVariant = EditorialCreamExtrude
 )
 
 @Composable

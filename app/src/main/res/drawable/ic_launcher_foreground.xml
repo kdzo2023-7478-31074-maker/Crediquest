@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/ic_crediquest_logo_1792692775399"
+        android:drawable="@drawable/crediquest_app_logo_1793973998516"
         android:gravity="center" />
 </layer-list>

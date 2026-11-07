@@ -1,10 +1,8 @@
 package com.example.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -27,8 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.SearchOff
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -42,12 +38,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.BookmarkItem
@@ -55,7 +53,11 @@ import com.example.model.JournalismModule
 import com.example.model.matchesQuery
 import com.example.ui.components.BookSpineCard
 import com.example.ui.components.CrediQuestSearchBar
-import com.example.ui.theme.ClothNavy
+import com.example.ui.components.EditorialSectionHeader
+import com.example.ui.components.LiquidGlassBox
+import com.example.ui.components.Soft3DCard
+import com.example.ui.theme.EditorialCrimson
+import com.example.ui.theme.EditorialInk
 
 enum class LibraryFilter(val label: String) {
     ALL("All Modules"),
@@ -75,7 +77,6 @@ fun LibraryScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf(LibraryFilter.ALL) }
 
-    // Search matching logic across title, keywords, and page content
     val searchResults = remember(searchQuery, modules) {
         if (searchQuery.isNotBlank()) {
             modules.mapNotNull { it.matchesQuery(searchQuery) }
@@ -115,16 +116,24 @@ fun LibraryScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 18.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+        contentPadding = PaddingValues(top = 14.dp, bottom = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Library Header & Search Bar
+        // Library Header & Liquid Glass Search Bar
         item(span = { GridItemSpan(2) }) {
             Column {
                 Text(
-                    text = "Library Shelf",
-                    style = MaterialTheme.typography.headlineLarge,
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(color = EditorialCrimson, fontWeight = FontWeight.Black)) {
+                            append(".")
+                        }
+                        append("LIBRARY SHELF")
+                    },
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 0.6.sp
+                    ),
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
@@ -134,7 +143,6 @@ fun LibraryScreen(
                 )
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Search Bar
                 CrediQuestSearchBar(
                     query = searchQuery,
                     onQueryChange = { searchQuery = it },
@@ -145,7 +153,6 @@ fun LibraryScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Filter Chips
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -156,13 +163,31 @@ fun LibraryScreen(
                             LibraryFilter.COMPLETED -> baseModules.count { it.progressPct == 100 }
                             LibraryFilter.BOOKMARKS -> filteredBookmarks.size
                         }
+                        val isSelected = selectedFilter == filter
                         FilterChip(
-                            selected = selectedFilter == filter,
+                            selected = isSelected,
                             onClick = { selectedFilter = filter },
-                            label = { Text("${filter.label} ($count)") },
+                            label = {
+                                Text(
+                                    text = "${filter.label} ($count)",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = if (isSelected) FontWeight.Black else FontWeight.SemiBold
+                                    )
+                                )
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                borderColor = EditorialInk.copy(alpha = 0.35f),
+                                selectedBorderColor = EditorialInk,
+                                borderWidth = 1.25.dp,
+                                selectedBorderWidth = 1.5.dp
+                            ),
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                selectedContainerColor = EditorialCrimson,
+                                selectedLabelColor = Color.White,
+                                containerColor = MaterialTheme.colorScheme.surface
                             ),
                             modifier = Modifier.testTag("filter_chip_${filter.name.lowercase()}")
                         )
@@ -185,9 +210,9 @@ fun LibraryScreen(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Reset",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        text = "RESET",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
+                        color = EditorialCrimson,
                         modifier = Modifier
                             .clickable { searchQuery = "" }
                             .padding(4.dp)
@@ -196,53 +221,36 @@ fun LibraryScreen(
             }
         }
 
-        // Bookmarks section
+        // Bookmarks Bento Section
         if (selectedFilter == LibraryFilter.BOOKMARKS || (selectedFilter == LibraryFilter.ALL && filteredBookmarks.isNotEmpty() && searchQuery.isBlank())) {
             item(span = { GridItemSpan(2) }) {
                 Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Bookmark,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Saved Bookmarks (${filteredBookmarks.size})",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    EditorialSectionHeader(
+                        title = "Saved Bookmarks (${filteredBookmarks.size})",
+                        indexLabel = "01"
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     if (filteredBookmarks.isEmpty()) {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
-                            shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.surface
+                        LiquidGlassBox(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(16.dp)
                         ) {
                             Text(
                                 text = if (searchQuery.isNotBlank()) "No bookmarks matched \"$searchQuery\"." else "No bookmarks saved yet. Tap the bookmark icon while reading any module to save pages here.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(16.dp)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     } else {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             filteredBookmarks.forEach { bm ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { onOpenModule(bm.moduleIndex, bm.pageIndex) },
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                                Soft3DCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    extrudeDepth = 3.dp,
+                                    onClick = { onOpenModule(bm.moduleIndex, bm.pageIndex) }
                                 ) {
                                     Row(
                                         modifier = Modifier
@@ -255,10 +263,13 @@ fun LibraryScreen(
                                             modifier = Modifier.weight(1f),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Text(
-                                                text = "🔖",
-                                                fontSize = 18.sp,
-                                                modifier = Modifier.padding(end = 10.dp)
+                                            Icon(
+                                                imageVector = Icons.Filled.Bookmark,
+                                                contentDescription = null,
+                                                tint = EditorialCrimson,
+                                                modifier = Modifier
+                                                    .padding(end = 10.dp)
+                                                    .size(20.dp)
                                             )
                                             Column {
                                                 Text(
@@ -275,9 +286,9 @@ fun LibraryScreen(
                                             }
                                         }
                                         Text(
-                                            text = "Open ›",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.primary
+                                            text = "OPEN ›",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
+                                            color = EditorialCrimson
                                         )
                                     }
                                 }
@@ -290,22 +301,19 @@ fun LibraryScreen(
 
         if (selectedFilter != LibraryFilter.BOOKMARKS) {
             item(span = { GridItemSpan(2) }) {
-                Text(
-                    text = if (searchQuery.isNotBlank()) "Matching Modules" else "Modules Catalog",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                EditorialSectionHeader(
+                    title = if (searchQuery.isNotBlank()) "Matching Modules" else "Modules Catalog",
+                    indexLabel = if (filteredBookmarks.isNotEmpty() && selectedFilter == LibraryFilter.ALL && searchQuery.isBlank()) "02" else "01"
                 )
             }
 
             if (filteredModules.isEmpty()) {
                 item(span = { GridItemSpan(2) }) {
-                    Card(
+                    Soft3DCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("library_search_empty_state"),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        shape = RoundedCornerShape(14.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -316,7 +324,7 @@ fun LibraryScreen(
                             Icon(
                                 imageVector = Icons.Filled.SearchOff,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = EditorialCrimson,
                                 modifier = Modifier.size(36.dp)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -339,15 +347,15 @@ fun LibraryScreen(
                             ) {
                                 suggestedSearches.forEach { term ->
                                     Surface(
-                                        shape = RoundedCornerShape(16.dp),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(1.25.dp, EditorialInk),
                                         color = MaterialTheme.colorScheme.surfaceVariant,
                                         modifier = Modifier.clickable { searchQuery = term }
                                     ) {
                                         Text(
                                             text = term,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.primary,
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                         )
                                     }
@@ -366,12 +374,11 @@ fun LibraryScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        // If searching and this card matched a snippet or topic, show a subtle preview badge
                         if (matchResult != null && !matchResult.matchedSnippet.isNullOrBlank()) {
                             Spacer(modifier = Modifier.height(4.dp))
-                            Surface(
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
+                            LiquidGlassBox(
+                                shape = RoundedCornerShape(6.dp),
+                                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
@@ -383,8 +390,7 @@ fun LibraryScreen(
                                     ),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }

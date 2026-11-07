@@ -1,27 +1,22 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -41,7 +35,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.JournalismModule
-import com.example.ui.theme.GoldFoilSoft
+import com.example.ui.theme.DarkSurface
+import com.example.ui.theme.EditorialCream
+import com.example.ui.theme.EditorialCrimson
+import com.example.ui.theme.EditorialInk
 import com.example.ui.theme.GoldLeaf
 import com.example.ui.theme.LineBorder
 
@@ -54,184 +51,173 @@ fun BookSpineCard(
     val bookColor = try {
         Color(android.graphics.Color.parseColor(module.colorHex))
     } catch (e: Exception) {
-        MaterialTheme.colorScheme.primary
+        EditorialCrimson
     }
 
-    Column(
+    val isDark = MaterialTheme.colorScheme.background.red < 0.2f
+    val cardSurface = if (isDark) DarkSurface else Color(0xFFFAF6EE)
+
+    Soft3DCard(
         modifier = modifier
-            .testTag("book_card_${module.id}")
-            .clickable(onClick = onClick)
+            .height(204.dp)
+            .testTag("book_card_${module.id}"),
+        containerColor = cardSurface,
+        shape = RoundedCornerShape(14.dp),
+        extrudeDepth = 4.dp,
+        onClick = onClick
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2f / 3f)
-                .shadow(
-                    elevation = 6.dp,
-                    shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp, topStart = 3.dp, bottomStart = 3.dp)
-                ),
-            shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp, topStart = 3.dp, bottomStart = 3.dp),
-            colors = CardDefaults.cardColors(containerColor = bookColor)
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                // Book spine groove gradient (shadow -> highlight -> book surface)
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(12.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(
-                                    Color.Black.copy(alpha = 0.45f),
-                                    Color.Black.copy(alpha = 0.15f),
-                                    Color.White.copy(alpha = 0.22f),
-                                    Color.Transparent
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Color-blocked Bento Header Band
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                bookColor,
+                                bookColor.copy(
+                                    red = (bookColor.red * 0.85f).coerceIn(0f, 1f),
+                                    green = (bookColor.green * 0.85f).coerceIn(0f, 1f),
+                                    blue = (bookColor.blue * 0.85f).coerceIn(0f, 1f)
                                 )
                             )
                         )
-                )
-
-                // Gold foil accent border line along the spine
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(start = 13.dp)
-                        .width(1.5.dp)
-                        .background(GoldLeaf.copy(alpha = 0.55f))
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 22.dp, end = 12.dp, top = 14.dp, bottom = 12.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
+                    )
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        // Module Number Tag
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(3.dp),
-                                color = Color.Black.copy(alpha = 0.35f),
-                                border = androidx.compose.foundation.BorderStroke(0.5.dp, GoldFoilSoft.copy(alpha = 0.6f))
-                            ) {
-                                Text(
-                                    text = "MODULE ${module.moduleNumber}",
-                                    color = GoldFoilSoft,
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 8.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.8.sp
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                )
-                            }
-
-                            if (module.progressPct == 100) {
-                                Surface(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = GoldLeaf
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Check,
-                                        contentDescription = "Finished",
-                                        tint = Color.Black,
-                                        modifier = Modifier
-                                            .size(14.dp)
-                                            .padding(1.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Title
+                    Surface(
+                        shape = RoundedCornerShape(5.dp),
+                        color = EditorialInk
+                    ) {
                         Text(
-                            text = module.title,
-                            color = Color(0xFFF9F7F2),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontFamily = FontFamily.Serif,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.5.sp,
-                                lineHeight = 17.sp,
-                                letterSpacing = (-0.2).sp
+                            text = "MODULE ${module.moduleNumber}",
+                            color = EditorialCream,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.6.sp
                             ),
-                            maxLines = 4,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        // Gold hairline divider
-                        Box(
-                            modifier = Modifier
-                                .width(28.dp)
-                                .height(1.5.dp)
-                                .background(GoldFoilSoft.copy(alpha = 0.7f))
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.5.dp)
                         )
                     }
 
-                    // Bottom publisher footer
+                    if (module.progressPct == 100) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = GoldLeaf,
+                            border = BorderStroke(1.dp, EditorialInk)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = "Finished",
+                                tint = EditorialInk,
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .padding(2.dp)
+                            )
+                        }
+                    } else {
+                        LiquidGlassBox(
+                            shape = RoundedCornerShape(5.dp),
+                            tintColor = EditorialInk,
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "${module.pageCount}P",
+                                color = EditorialCream,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 8.5.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.5.sp
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Crisp Editorial Divider
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.5.dp)
+                    .background(EditorialInk)
+            )
+
+            // Card Body & Progress Footer
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = module.title,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        lineHeight = 18.sp,
+                        letterSpacing = (-0.2).sp
+                    ),
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    LinearProgressIndicator(
+                        progress = { (module.progressPct / 100f).coerceIn(0f, 1f) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = if (module.progressPct == 100) GoldLeaf else EditorialCrimson,
+                        trackColor = LineBorder.copy(alpha = 0.22f)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "CREDIQUEST",
-                            color = Color(0xFFF9F7F2).copy(alpha = 0.6f),
+                            text = when {
+                                module.progressPct == 100 -> "COMPLETED"
+                                module.progressPct > 0 -> "${module.progressPct}% READ"
+                                else -> "UNREAD"
+                            },
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 1.sp
-                            )
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = when {
+                                module.progressPct == 100 -> GoldLeaf
+                                module.progressPct > 0 -> EditorialCrimson
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+
+                        Text(
+                            text = "OPEN ›",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = EditorialCrimson
                         )
                     }
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(7.dp))
-
-        // Progress line with rounded bar
-        LinearProgressIndicator(
-            progress = { (module.progressPct / 100f).coerceIn(0f, 1f) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp)),
-            color = if (module.progressPct == 100) GoldLeaf else MaterialTheme.colorScheme.primary,
-            trackColor = LineBorder.copy(alpha = 0.45f)
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${module.pageCount} page${if (module.pageCount > 1) "s" else ""}",
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = when {
-                    module.progressPct == 100 -> "Completed"
-                    module.progressPct > 0 -> "${module.progressPct}% read"
-                    else -> "Unread"
-                },
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 11.sp,
-                    fontWeight = if (module.progressPct > 0) FontWeight.Bold else FontWeight.Normal
-                ),
-                color = if (module.progressPct == 100) GoldLeaf else if (module.progressPct > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
